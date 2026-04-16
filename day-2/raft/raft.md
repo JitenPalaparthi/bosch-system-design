@@ -223,3 +223,7 @@ Strong consistency guarantee provided by Raft
 ## One-line Summary
 
 Raft ensures distributed consensus by electing a leader and replicating logs across a majority of nodes while maintaining strong consistency and fault tolerance.
+
+Quorun formule:
+
+(number-nodes/2) +1
