@@ -2,7 +2,8 @@ import threading
 import time
 
 balance = 1000
-lock = threading.Lock()
+lock = threading.Lock() # mutex --> thread locks
+
 
 def withdraw_without_lock(amount):
     global balance
@@ -16,6 +17,7 @@ def withdraw_with_lock(amount):
         temp = balance
         time.sleep(0.1)
         balance = temp - amount
+    
 
 # Without coordination
 balance = 1000
@@ -36,3 +38,5 @@ t2.start()
 t1.join()
 t2.join()
 print("With lock balance:", balance)
+
+# do not sharememory, instead share memory by comminicating 

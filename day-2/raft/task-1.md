@@ -22,5 +22,3 @@ All three applications for every 200ms try to ping the other applications, log a
 app2--app3 ok
 
 
-
-
