@@ -96,6 +96,7 @@ docker exec -it etcd1 etcdctl \
 ```bash
 docker exec -it etcd1 etcdctl put name "Jiten"
 docker exec -it etcd2 etcdctl get name
+docker exec -it etcd2 etcdctl get "" --prefix --keys-only=false
 ```
 
 ---
