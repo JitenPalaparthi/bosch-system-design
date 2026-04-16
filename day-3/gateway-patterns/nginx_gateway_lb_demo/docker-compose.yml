@@ -1,0 +1,46 @@
+version: "3.9"
+
+services:
+  gateway:
+    image: nginx:1.27-alpine
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - user-service-1
+      - user-service-2
+      - order-service-1
+      - order-service-2
+
+  user-service-1:
+    build:
+      context: ./services/user_service
+    environment:
+      INSTANCE_NAME: user-service-1
+    expose:
+      - "5001"
+
+  user-service-2:
+    build:
+      context: ./services/user_service
+    environment:
+      INSTANCE_NAME: user-service-2
+    expose:
+      - "5001"
+
+  order-service-1:
+    build:
+      context: ./services/order_service
+    environment:
+      INSTANCE_NAME: order-service-1
+    expose:
+      - "5002"
+
+  order-service-2:
+    build:
+      context: ./services/order_service
+    environment:
+      INSTANCE_NAME: order-service-2
+    expose:
+      - "5002"
