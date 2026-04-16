@@ -10,7 +10,7 @@ def producer():
         print(f"[Producer] Producing {i}")
         q.put(i)  # blocks when queue is full → BACKPRESSURE
         i += 1
-       # time.sleep(0.1)  # fast producer
+        #time.sleep(0.1)  # fast producer
 
 def consumer():
     while True:
