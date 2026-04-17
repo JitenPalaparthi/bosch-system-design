@@ -1,0 +1,55 @@
+services:
+  app1:
+    build: ./app1
+    container_name: app1
+    environment:
+      TARGET_URL: http://envoy1:15001/hello
+    ports:
+      - "5000:5000"
+    depends_on:
+      - envoy1
+    networks:
+      - mesh-net
+
+  app2:
+    build: ./app2
+    container_name: app2
+    environment:
+      FAILURE_RATE: 0
+      DELAY_MS: 0
+    expose:
+      - "5001"
+    networks:
+      - mesh-net
+
+  envoy1:
+    image: envoyproxy/envoy:v1.37-latest
+    container_name: envoy1
+    command: /usr/local/bin/envoy -c /etc/envoy/envoy.yaml --log-level info
+    volumes:
+      - ./envoy1/envoy.yaml:/etc/envoy/envoy.yaml:ro
+    ports:
+      - "15001:15001"
+      - "9901:9901"
+    depends_on:
+      - envoy2
+    networks:
+      - mesh-net
+
+  envoy2:
+    image: envoyproxy/envoy:v1.37-latest
+    container_name: envoy2
+    command: /usr/local/bin/envoy -c /etc/envoy/envoy.yaml --log-level info
+    volumes:
+      - ./envoy2/envoy.yaml:/etc/envoy/envoy.yaml:ro
+    ports:
+      - "15002:15002"
+      - "9902:9901"
+    depends_on:
+      - app2
+    networks:
+      - mesh-net
+
+networks:
+  mesh-net:
+    driver: bridge
