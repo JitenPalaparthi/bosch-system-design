@@ -31,6 +31,9 @@ With mesh:
 
 ```text
 Service A -> Proxy/Sidecar A -> Proxy/Sidecar B -> Service B
+
+Service A(HTTP1.1,RESTFUL) -> SideCar A --> Proxy/Sidecar B -> Service B(HTTP2,gRPC)
+
 ```
 
 So the application code focuses on **business logic**, while the mesh handles **network behavior and policy**.

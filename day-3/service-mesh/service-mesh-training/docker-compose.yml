@@ -5,7 +5,7 @@ services:
     environment:
       TARGET_URL: http://envoy1:15001/hello
     ports:
-      - "5000:5000"
+      - "5002:5002"
     depends_on:
       - envoy1
     networks:
@@ -19,6 +19,8 @@ services:
       DELAY_MS: 0
     expose:
       - "5001"
+    ports:
+      - "5001:5001"
     networks:
       - mesh-net
 
