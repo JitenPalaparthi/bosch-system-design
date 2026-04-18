@@ -1,0 +1,37 @@
+CREATE USER appuser WITH PASSWORD 'apppass';
+GRANT ALL PRIVILEGES ON DATABASE appdb TO appuser;
+
+CREATE USER debezium WITH REPLICATION LOGIN PASSWORD 'dbz';
+
+\connect appdb;
+
+CREATE TABLE IF NOT EXISTS public.products (
+    id SERIAL PRIMARY KEY,
+    name TEXT NOT NULL,
+    description TEXT,
+    price NUMERIC(10,2) NOT NULL,
+    category TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+ALTER TABLE public.products OWNER TO appuser;
+GRANT USAGE, CREATE ON SCHEMA public TO appuser;
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO appuser;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO appuser;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO appuser;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO appuser;
+
+CREATE OR REPLACE FUNCTION public.set_updated_at()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.updated_at = CURRENT_TIMESTAMP;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS trg_products_updated_at ON public.products;
+CREATE TRIGGER trg_products_updated_at
+BEFORE UPDATE ON public.products
+FOR EACH ROW
+EXECUTE FUNCTION public.set_updated_at();
