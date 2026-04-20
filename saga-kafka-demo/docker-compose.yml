@@ -1,0 +1,104 @@
+services:
+  kafka:
+    networks: [saga-net]
+    image: confluentinc/cp-kafka:latest
+    container_name: kafka
+    hostname: kafka
+    ports:
+      - "9092:9092"
+    environment:
+      # --- existing KRaft config (keep yours) ---
+      CLUSTER_ID: "5hDiE5vETjicqnOmlhZ9Og"
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: "broker,controller"
+      KAFKA_CONTROLLER_QUORUM_VOTERS: "1@kafka:9093"
+
+      # --- listeners (keep yours) ---
+      KAFKA_LISTENERS: "PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093,INTERNAL://0.0.0.0:29092"
+      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://localhost:9092,INTERNAL://kafka:29092"
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,INTERNAL:PLAINTEXT"
+      KAFKA_INTER_BROKER_LISTENER_NAME: "INTERNAL"
+      KAFKA_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
+
+      # --- other settings (keep yours) ---
+      KAFKA_LOG_DIRS: "/var/lib/kafka/data"
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_MIN_INSYNC_REPLICAS: 1
+
+      # JMX_PORT: 9010
+      # KAFKA_JMX_HOSTNAME: kafka
+    volumes:
+      - kafka_data:/var/lib/kafka/data
+    healthcheck:
+      test: ["CMD", "kafka-topics", "--bootstrap-server", "kafka:29092", "--list"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+  order-service:
+    build: ./order-service
+    container_name: order-service
+    ports:
+      - "8001:8001"
+    environment:
+      - SERVICE_NAME=order-service
+      - FLASK_PORT=8001
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:29092
+      - ORDERS_DB_PATH=/data/orders.db
+      - ORDER_CREATED_TOPIC=order.created
+      - PAYMENT_REQUESTED_TOPIC=payment.requested
+      - PAYMENT_COMPLETED_TOPIC=payment.completed
+      - PAYMENT_FAILED_TOPIC=payment.failed
+      - ORDER_CANCELLED_TOPIC=order.cancelled
+    volumes:
+      - order_data:/data
+
+    depends_on:
+      kafka:
+        condition: service_healthy
+    networks:
+      - saga-net
+
+  payment-service:
+    build: ./payment-service
+    container_name: payment-service
+    ports:
+      - "8002:8002"
+    environment:
+      - SERVICE_NAME=payment-service
+      - FLASK_PORT=8002
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:29092
+      - PAYMENTS_DB_PATH=/data/payments.db
+      - PAYMENT_REQUESTED_TOPIC=payment.requested
+      - PAYMENT_COMPLETED_TOPIC=payment.completed
+      - PAYMENT_FAILED_TOPIC=payment.failed
+    volumes:
+      - payment_data:/data
+    depends_on:
+      kafka:
+        condition: service_healthy
+    networks:
+      - saga-net
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: kafka-ui
+    ports:
+      - "8090:8080"
+    environment:
+      - KAFKA_CLUSTERS_0_NAME=local
+      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS= kafka:29092
+    depends_on:
+      - kafka
+    networks:
+      - saga-net
+
+volumes:
+  order_data:
+  payment_data:
+  kafka_data:
+
+networks:
+  saga-net:
+    driver: bridge
