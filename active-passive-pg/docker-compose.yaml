@@ -1,0 +1,205 @@
+x-spilo-image: &spilo_image ghcr.io/zalando/spilo-16:3.3-p1
+
+networks:
+  patroninet:
+
+volumes:
+  etcd-data:
+  pg1-data:
+  pg2-data:
+  pg3-data:
+
+services:
+ 
+  haproxy:
+      image: docker.io/library/haproxy:3.0
+      platform: linux/arm64
+      networks: [patroninet]
+      volumes:
+        - ./haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+      ports:
+        - "50000:5000"   # rw (leader) port
+        - "5001:5001"   # ro (replicas) port
+        - "8404:8404"   # /metrics prometheus
+      depends_on: [patroni1, patroni2, patroni3]
+      healthcheck:
+        # mark healthy when the TCP port is accepting connections
+        test: ["CMD", "bash", "-lc", "exec 3<>/dev/tcp/127.0.0.1/5000 && echo -e 'quit' >&3 || exit 1"]
+        interval: 5s
+        timeout: 3s
+        retries: 30
+ 
+  etcd:
+    image: quay.io/coreos/etcd:v3.5.12
+    command:
+      - /usr/local/bin/etcd
+      - --name=etcd0
+      - --data-dir=/etcd-data
+      # advertise WHAT clients should use (must be routable): use service DNS
+      - --advertise-client-urls=http://etcd:2379
+      - --listen-client-urls=http://0.0.0.0:2379
+
+      # peer URLs (ok to listen on 0.0.0.0, advertise the DNS)
+      - --initial-advertise-peer-urls=http://etcd:2380
+      - --listen-peer-urls=http://0.0.0.0:2380
+      - --initial-cluster=etcd0=http://etcd:2380
+      - --initial-cluster-state=new
+    ports:
+      - "2379:2379"   # optional; only needed from host
+    networks: [patroninet]
+    volumes:
+      - etcd-data:/etcd-data
+
+  patroni1:
+    image: *spilo_image
+    hostname: patroni1
+   # env_file: [./env/patroni1.env]
+    networks: [patroninet]
+    volumes:
+      - pg1-data:/home/postgres/pgdata
+    environment:
+      SPILO_CONFIGURATION: |
+        scope: demo
+        etcd3:
+          hosts: ["etcd:2379"]
+        bootstrap:
+          dcs:
+            loop_wait: 10
+            ttl: 30
+            postgresql:
+              parameters:
+                max_connections: 200
+                shared_buffers: 256MB
+                wal_level: logical
+                max_wal_senders: 10
+                max_replication_slots: 10
+          # Optional: initial DB options (not passwords)
+          initdb:
+            - encoding: UTF8
+            - data-checksums
+          # You can also seed default users here if you prefer (alternative to the authentication block below)
+
+        postgresql:
+          listen: 0.0.0.0:5432
+          connect_address: patroni1:5432   # patroni2 / patroni3 on the other nodes            
+          authentication:
+            superuser:
+              username: postgres
+              password: postgres
+            replication:
+              username: standby
+              password: standby
+        restapi:
+          listen: 0.0.0.0:8008
+          connect_address: patroni1:8008   # patroni2 / patroni3 on the other nodes
+
+    ports:
+      - "8008:8008"
+    depends_on: [etcd]
+
+  patroni2:
+    image: *spilo_image
+    hostname: patroni2
+    #env_file: [./env/patroni2.env]
+    networks: [patroninet]
+    ports:
+      - "8009:8008" 
+    volumes:
+      - pg2-data:/home/postgres/pgdata
+    environment:
+      SPILO_CONFIGURATION: |
+        scope: demo
+        etcd3:
+          hosts: ["etcd:2379"]
+
+        bootstrap:
+          dcs:
+            loop_wait: 10
+            ttl: 30
+            postgresql:
+              parameters:
+                max_connections: 200
+                shared_buffers: 256MB
+                wal_level: logical
+                max_wal_senders: 10
+                max_replication_slots: 10
+          # Optional: initial DB options (not passwords)
+          initdb:
+            - encoding: UTF8
+            - data-checksums
+          # You can also seed default users here if you prefer (alternative to the authentication block below)
+
+        postgresql:
+          listen: 0.0.0.0:5432
+          connect_address: patroni2:5432   # patroni2 / patroni3 on the other nodes
+          authentication:
+            superuser:
+              username: postgres
+              password: postgres
+            replication:
+              username: standby
+              password: standby
+
+        restapi:
+          listen: 0.0.0.0:8008
+          connect_address: patroni2:8008   # patroni2 / patroni3 on the other nodes
+
+    depends_on: [etcd,patroni1]
+
+  patroni3:
+    image: *spilo_image
+    hostname: patroni3
+   # env_file: [./env/patroni3.env]
+    networks: [patroninet]
+    ports:
+      - "8010:8008" 
+    volumes:
+      - pg3-data:/home/postgres/pgdata
+    environment:
+      SPILO_CONFIGURATION: |
+        scope: demo
+        etcd3:
+          hosts: ["etcd:2379"]
+
+        bootstrap:
+          dcs:
+            loop_wait: 10
+            ttl: 30
+            postgresql:
+              parameters:
+                max_connections: 200
+                shared_buffers: 256MB
+                wal_level: logical
+                max_wal_senders: 10
+                max_replication_slots: 10
+          # Optional: initial DB options (not passwords)
+          initdb:
+            - encoding: UTF8
+            - data-checksums
+          # You can also seed default users here if you prefer (alternative to the authentication block below)
+
+        postgresql:
+          listen: 0.0.0.0:5432
+          connect_address: patroni3:5432   # patroni2 / patroni3 on the other nodes
+          
+          authentication:
+            superuser:
+              username: postgres
+              password: postgres
+            replication:
+              username: standby
+              password: standby
+        restapi:
+          listen: 0.0.0.0:8008
+          connect_address: patroni3:8008   # patroni2 / patroni3 on the other nodes
+
+    depends_on: [etcd,patroni2]
+
+  adminer:
+    networks: [patroninet]
+    image: adminer:4.8.1
+    restart: always
+    ports:
+      - "18080:8080"
+    environment:
+      ADMINER_DEFAULT_SERVER: haproxy
