@@ -1,0 +1,25 @@
+{
+  "name": "postgres-orders-source",
+  "config": {
+    "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
+    "tasks.max": "1",
+    "database.hostname": "postgres",
+    "database.port": "5432",
+    "database.user": "appuser",
+    "database.password": "apppass",
+    "database.dbname": "ordersdb",
+    "database.server.name": "ordersdb",
+    "topic.prefix": "cdc",
+    "schema.include.list": "public",
+    "table.include.list": "public.orders",
+    "plugin.name": "pgoutput",
+    "slot.name": "orders_slot",
+    "publication.name": "orders_publication",
+    "publication.autocreate.mode": "filtered",
+    "tombstones.on.delete": "false",
+    "include.schema.changes": "false",
+    "snapshot.mode": "initial",
+    "decimal.handling.mode": "string",
+    "time.precision.mode": "connect"
+  }
+}

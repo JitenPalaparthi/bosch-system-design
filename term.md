@@ -18,3 +18,8 @@ Calling A from Another Service
 Orachastration
 Choreography
 Sync and Async
+
+-- 
+Dead Lock Queue
+Backpressure
+Jitter
