@@ -1,0 +1,152 @@
+version: "3.9"
+
+services:
+  redis-1:
+    image: redis:7.2
+    container_name: redis-1
+    command: >
+      redis-server
+      --port 7001
+      --cluster-enabled yes
+      --cluster-config-file nodes.conf
+      --cluster-node-timeout 5000
+      --appendonly yes
+      --protected-mode no
+      --bind 0.0.0.0
+      --cluster-announce-ip redis-1
+      --cluster-announce-port 7001
+      --cluster-announce-bus-port 17001
+    ports:
+      - "7001:7001"
+      - "17001:17001"
+    networks:
+      - redis-cluster-net
+    volumes:
+      - redis1-data:/data
+
+  redis-2:
+    image: redis:7.2
+    container_name: redis-2
+    command: >
+      redis-server
+      --port 7002
+      --cluster-enabled yes
+      --cluster-config-file nodes.conf
+      --cluster-node-timeout 5000
+      --appendonly yes
+      --protected-mode no
+      --bind 0.0.0.0
+      --cluster-announce-ip redis-2
+      --cluster-announce-port 7002
+      --cluster-announce-bus-port 17002
+    ports:
+      - "7002:7002"
+      - "17002:17002"
+    networks:
+      - redis-cluster-net
+    volumes:
+      - redis2-data:/data
+
+  redis-3:
+    image: redis:7.2
+    container_name: redis-3
+    command: >
+      redis-server
+      --port 7003
+      --cluster-enabled yes
+      --cluster-config-file nodes.conf
+      --cluster-node-timeout 5000
+      --appendonly yes
+      --protected-mode no
+      --bind 0.0.0.0
+      --cluster-announce-ip redis-3
+      --cluster-announce-port 7003
+      --cluster-announce-bus-port 17003
+    ports:
+      - "7003:7003"
+      - "17003:17003"
+    networks:
+      - redis-cluster-net
+    volumes:
+      - redis3-data:/data
+
+  redis-4:
+    image: redis:7.2
+    container_name: redis-4
+    command: >
+      redis-server
+      --port 7004
+      --cluster-enabled yes
+      --cluster-config-file nodes.conf
+      --cluster-node-timeout 5000
+      --appendonly yes
+      --protected-mode no
+      --bind 0.0.0.0
+      --cluster-announce-ip redis-4
+      --cluster-announce-port 7004
+      --cluster-announce-bus-port 17004
+    ports:
+      - "7004:7004"
+      - "17004:17004"
+    networks:
+      - redis-cluster-net
+    volumes:
+      - redis4-data:/data
+
+  redis-5:
+    image: redis:7.2
+    container_name: redis-5
+    command: >
+      redis-server
+      --port 7005
+      --cluster-enabled yes
+      --cluster-config-file nodes.conf
+      --cluster-node-timeout 5000
+      --appendonly yes
+      --protected-mode no
+      --bind 0.0.0.0
+      --cluster-announce-ip redis-5
+      --cluster-announce-port 7005
+      --cluster-announce-bus-port 17005
+    ports:
+      - "7005:7005"
+      - "17005:17005"
+    networks:
+      - redis-cluster-net
+    volumes:
+      - redis5-data:/data
+
+  redis-6:
+    image: redis:7.2
+    container_name: redis-6
+    command: >
+      redis-server
+      --port 7006
+      --cluster-enabled yes
+      --cluster-config-file nodes.conf
+      --cluster-node-timeout 5000
+      --appendonly yes
+      --protected-mode no
+      --bind 0.0.0.0
+      --cluster-announce-ip redis-6
+      --cluster-announce-port 7006
+      --cluster-announce-bus-port 17006
+    ports:
+      - "7006:7006"
+      - "17006:17006"
+    networks:
+      - redis-cluster-net
+    volumes:
+      - redis6-data:/data
+
+networks:
+  redis-cluster-net:
+    driver: bridge
+
+volumes:
+  redis1-data:
+  redis2-data:
+  redis3-data:
+  redis4-data:
+  redis5-data:
+  redis6-data:
