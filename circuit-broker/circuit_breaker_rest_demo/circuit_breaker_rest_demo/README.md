@@ -57,13 +57,13 @@ docker compose up --build
 Call this multiple times:
 
 ```bash
-curl http://localhost:5000/proxy
+curl http://localhost:5002/proxy
 ```
 
 Check breaker state:
 
 ```bash
-curl http://localhost:5000/breaker
+curl http://localhost:5002/breaker
 ```
 
 You will observe states such as:
