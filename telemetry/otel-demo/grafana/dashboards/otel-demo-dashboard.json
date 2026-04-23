@@ -1,0 +1,74 @@
+{
+  "annotations": {"list": []},
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0},
+      "id": 1,
+      "targets": [
+        {
+          "expr": "sum(rate(demo_requests_total[1m]))",
+          "refId": "A"
+        }
+      ],
+      "title": "Requests/sec",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
+      "id": 2,
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(demo_work_duration_milliseconds_bucket[1m])) by (le))",
+          "refId": "A"
+        }
+      ],
+      "title": "p95 /work latency (ms)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8},
+      "id": 3,
+      "targets": [
+        {
+          "expr": "sum by (item) (increase(orders_created_total[5m]))",
+          "refId": "A"
+        }
+      ],
+      "title": "Orders created by item (5m)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "loki", "uid": "loki"},
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8},
+      "id": 4,
+      "targets": [
+        {
+          "expr": "{service_name=\"orders-api\"}",
+          "queryType": "range",
+          "refId": "A"
+        }
+      ],
+      "title": "Logs for orders-api",
+      "type": "logs"
+    }
+  ],
+  "refresh": "5s",
+  "schemaVersion": 39,
+  "style": "dark",
+  "tags": ["opentelemetry", "demo"],
+  "templating": {"list": []},
+  "time": {"from": "now-15m", "to": "now"},
+  "timezone": "browser",
+  "title": "OpenTelemetry Full Demo",
+  "uid": "otel-full-demo",
+  "version": 1,
+  "weekStart": ""
+}
