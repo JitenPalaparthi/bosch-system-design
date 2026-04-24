@@ -1,0 +1,50 @@
+[
+  {
+    "id": "doc-1",
+    "title": "Password Reset Guide",
+    "text": "To reset your account password, open the settings page, choose security, and click reset password. A verification email will be sent to your registered address.",
+    "category": "support",
+    "source": "knowledge-base",
+    "metadata": {"team": "helpdesk", "language": "en"}
+  },
+  {
+    "id": "doc-2",
+    "title": "Refund Policy",
+    "text": "Customers can request a refund within 30 days of purchase if the product is defective or if the wrong item was shipped.",
+    "category": "policy",
+    "source": "website",
+    "metadata": {"team": "billing", "language": "en"}
+  },
+  {
+    "id": "doc-3",
+    "title": "Phishing Email Warning",
+    "text": "Employees should never click suspicious links or download attachments from unknown senders. Report phishing emails immediately to the security team.",
+    "category": "security",
+    "source": "security-handbook",
+    "metadata": {"team": "security", "language": "en"}
+  },
+  {
+    "id": "doc-4",
+    "title": "Vacation Policy",
+    "text": "Full-time employees receive 20 days of annual leave. Vacation requests should be submitted at least two weeks in advance.",
+    "category": "hr",
+    "source": "employee-handbook",
+    "metadata": {"team": "hr", "language": "en"}
+  },
+  {
+    "id": "doc-5",
+    "title": "Invoice Payment Support",
+    "text": "If an invoice payment fails, verify the billing address, card details, and card expiry date. If the problem continues, contact billing support.",
+    "category": "billing",
+    "source": "knowledge-base",
+    "metadata": {"team": "finance", "language": "en"}
+  },
+  {
+    "id": "doc-6",
+    "title": "Remote Work Device Rules",
+    "text": "Only company-managed laptops with disk encryption and updated antivirus software may access internal systems from remote locations.",
+    "category": "security",
+    "source": "it-policy",
+    "metadata": {"team": "it", "language": "en"}
+  }
+]

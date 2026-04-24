@@ -1,0 +1,62 @@
+[
+  {
+    "id": "email-001",
+    "label": "spam",
+    "category": "example",
+    "from": "payroll-update@secure-payroll-help.com",
+    "subject": "Urgent payroll correction required",
+    "body": "Please open the attached payroll form and send your bank details today to avoid salary delay.",
+    "indicators": ["urgent language", "bank details request", "suspicious domain", "unexpected attachment"],
+    "why": "This email pressures the user, asks for sensitive data, and comes from a lookalike domain unrelated to the real payroll system."
+  },
+  {
+    "id": "email-002",
+    "label": "spam",
+    "category": "example",
+    "from": "rewards@globalgift-center.net",
+    "subject": "You won a corporate gift card",
+    "body": "Confirm your company credentials to release your reward voucher before it expires in 30 minutes.",
+    "indicators": ["credential harvesting", "too-good-to-be-true offer", "urgency", "credential request"],
+    "why": "Legitimate reward programs do not ask for passwords. The artificial deadline and reward bait are classic phishing signals."
+  },
+  {
+    "id": "email-003",
+    "label": "ham",
+    "category": "example",
+    "from": "hr@company.internal",
+    "subject": "Updated leave policy for FY2026",
+    "body": "Please review the attached leave policy update. It covers carry-forward limits and approval workflow. No action is needed today.",
+    "indicators": ["internal domain", "non-urgent tone", "policy context", "no credential request"],
+    "why": "This message fits a normal internal HR communication pattern and does not request secrets, money, or unusual action."
+  },
+  {
+    "id": "email-004",
+    "label": "ham",
+    "category": "example",
+    "from": "manager@company.internal",
+    "subject": "Team meeting rescheduled",
+    "body": "Tomorrow's architecture review is moved to 3 PM. The same conference link will be used.",
+    "indicators": ["expected sender", "normal operational message", "no sensitive request"],
+    "why": "This is a routine internal scheduling email with no suspicious social-engineering signal."
+  },
+  {
+    "id": "policy-001",
+    "label": "ham",
+    "category": "security_guideline",
+    "from": "security-awareness@company.internal",
+    "subject": "Phishing awareness indicators",
+    "body": "Treat emails as suspicious when they ask for passwords, MFA codes, bank details, wire transfers, or urgent confidential action. Check sender domain carefully and avoid unexpected attachments.",
+    "indicators": ["security policy", "phishing rules", "verification guidance"],
+    "why": "This is a reference security guideline used by the RAG assistant to explain classifications consistently."
+  },
+  {
+    "id": "policy-002",
+    "label": "ham",
+    "category": "security_guideline",
+    "from": "security-awareness@company.internal",
+    "subject": "Legitimate internal email characteristics",
+    "body": "Legitimate internal emails usually come from approved domains, match known workflows, avoid requesting credentials, and provide context that aligns with recent organizational events.",
+    "indicators": ["internal workflow", "trusted domain", "expected process"],
+    "why": "This guidance helps distinguish ordinary business communication from phishing or spam attempts."
+  }
+]
